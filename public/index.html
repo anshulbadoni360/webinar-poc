@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #0f0f0f;
+        }
+
+        .video-wrapper {
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn {
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-red {
+            background: #cc0000;
+        }
+
+        .btn-gray {
+            background: #272727;
+        }
+
+        .btn-gray:hover {
+            background: #3a3a3a;
+        }
+
+        .input-dark {
+            background: #121212;
+            border: 1px solid #303030;
+        }
+
+        .input-dark:focus {
+            border-color: #3ea6ff;
+            outline: none;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #303030;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .live-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-white min-h-screen">
+
+    <!-- Header -->
+    <header
+        class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] z-50 px-4 flex items-center justify-between border-b border-[#303030]">
+        <!-- Left: Logo -->
+        <div class="flex items-center gap-4">
+            <button id="menuBtn" class="p-2 hover:bg-white/10 rounded-full">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </button>
+            <a href="/" class="flex items-center gap-1">
+                <svg class="w-8 h-8 text-red-600" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                </svg>
+                <span class="text-xl font-semibold hidden sm:block">StreamHub</span>
+            </a>
+        </div>
+
+        <!-- Center: Search -->
+        <div class="hidden md:flex flex-1 max-w-xl mx-4">
+            <input type="text" placeholder="Search" class="flex-1 h-10 px-4 input-dark rounded-l-full text-sm">
+            <button class="px-5 h-10 bg-[#222] border border-l-0 border-[#303030] rounded-r-full hover:bg-[#333]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-2">
+            <button onclick="document.getElementById('createModal').classList.remove('hidden')"
+                class="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-full">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span class="hidden sm:block text-sm">Go Live</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-medium">
+                U
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="fixed left-0 top-14 bottom-0 w-56 bg-[#0f0f0f] overflow-y-auto z-40 transition-transform">
+        <nav class="p-2">
+            <a href="#" class="sidebar-link active flex items-center gap-5 px-3 py-2 rounded-lg">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                </svg>
+                <span class="text-sm">Home</span>
+            </a>
+            <a href="#" class="sidebar-link flex items-center gap-5 px-3 py-2 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                </svg>
+                <span class="text-sm">Trending</span>
+            </a>
+
+            <hr class="my-3 border-[#303030]">
+
+            <div class="px-3 py-2">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-400">Live Rooms</span>
+                    <button onclick="fetchRooms()" class="p-1 hover:bg-white/10 rounded">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="roomList" class="space-y-1">
+                    <p class="text-xs text-gray-500 py-4 text-center">No live rooms</p>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="pt-14 pl-56">
+        <div class="p-6 max-w-6xl mx-auto">
+
+            <!-- Main Video -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Video Area -->
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- Remote Video (Watching) -->
+                    <div>
+                        <div class="video-wrapper relative">
+                            <video id="remoteVideo" autoplay playsinline></video>
+                            <div id="noVideoMsg" class="absolute inset-0 flex flex-col items-center justify-center">
+                                <svg class="w-16 h-16 text-gray-700 mb-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-gray-500">Join a room to watch</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h1 class="text-lg font-medium">Welcome to StreamHub</h1>
+                            <p class="text-sm text-gray-400 mt-1">Create or join a room to start streaming</p>
+                        </div>
+                    </div>
+
+                    <!-- Local Video (Your Camera) -->
+                    <div class="card rounded-xl p-4">
+                        <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            Your Camera
+                        </h3>
+                        <div class="video-wrapper">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Panel -->
+                <div class="space-y-4">
+                    <!-- Join Room -->
+                    <div class="card rounded-xl p-4">
+                        <h3 class="font-medium mb-4">Join Room</h3>
+                        <input id="roomId" type="text" placeholder="Enter Room ID"
+                            class="w-full h-10 px-3 input-dark rounded-lg text-sm mb-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="startWatching()"
+                                class="btn btn-gray py-2.5 rounded-lg text-sm font-medium">
+                                Watch
+                            </button>
+                            <button onclick="startPublishing()"
+                                class="btn btn-red py-2.5 rounded-lg text-sm font-medium">
+                                Stream
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Create Room -->
+                    <div class="card rounded-xl p-4">
+                        <h3 class="font-medium mb-4">Create Room</h3>
+                        <input id="roomName" type="text" placeholder="Stream Title"
+                            class="w-full h-10 px-3 input-dark rounded-lg text-sm mb-3">
+                        <button onclick="createRoom()" class="btn btn-red w-full py-2.5 rounded-lg text-sm font-medium">
+                            Create Room
+                        </button>
+                    </div>
+
+                    <!-- Chat (placeholder) -->
+                    <div class="card rounded-xl p-4 h-64 flex flex-col">
+                        <h3 class="font-medium mb-3">Live Chat</h3>
+                        <div class="flex-1 flex items-center justify-center">
+                            <p class="text-xs text-gray-500">Chat coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Room Modal -->
+    <div id="createModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#212121] rounded-xl w-full max-w-md overflow-hidden">
+            <div class="px-5 py-4 border-b border-[#303030] flex items-center justify-between">
+                <h2 class="font-medium">Go Live</h2>
+                <button onclick="document.getElementById('createModal').classList.add('hidden')"
+                    class="p-1 hover:bg-white/10 rounded-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="text-sm mb-1 block text-gray-400">Title</label>
+                    <input id="modalRoomName" type="text" placeholder="My Stream"
+                        class="w-full h-11 px-3 input-dark rounded-lg">
+                </div>
+            </div>
+            <div class="px-5 py-4 bg-[#1a1a1a] flex justify-end gap-3">
+                <button onclick="document.getElementById('createModal').classList.add('hidden')"
+                    class="px-4 py-2 text-sm hover:bg-white/10 rounded-lg">
+                    Cancel
+                </button>
+                <button onclick="createRoomFromModal()" class="btn btn-red px-5 py-2 rounded-lg text-sm font-medium">
+                    Create & Go Live
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load your existing client.js -->
+    <script src="client.js"></script>
+
+    <!-- Extra UI helpers -->
+    <script>
+        // Fetch rooms for sidebar
+        async function fetchRooms() {
+            try {
+                const res = await fetch('/api/rooms');
+                const rooms = await res.json();
+                const list = document.getElementById('roomList');
+
+                if (rooms.length === 0) {
+                    list.innerHTML = '<p class="text-xs text-gray-500 py-4 text-center">No live rooms</p>';
+                    return;
+                }
+
+                list.innerHTML = rooms.map(room => `
+                    <button onclick="selectRoom(${room.id})" 
+                        class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 text-left">
+                        <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-xs">
+                            ${(room.name || 'R').charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm truncate">${room.name || 'Room ' + room.id}</p>
+                            <p class="text-xs text-gray-500 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span>
+                                Live
+                            </p>
+                        </div>
+                    </button>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to fetch rooms:', e);
+            }
+        }
+
+        function selectRoom(id) {
+            document.getElementById('roomId').value = id;
+        }
+
+        function createRoomFromModal() {
+            const name = document.getElementById('modalRoomName').value;
+            document.getElementById('roomName').value = name;
+            document.getElementById('createModal').classList.add('hidden');
+            createRoom();
+        }
+
+        // Toggle sidebar on mobile
+        document.getElementById('menuBtn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Load rooms on page load
+        fetchRooms();
+        setInterval(fetchRooms, 30000);
+    </script>
+</body>
+
+</html>
