@@ -187,7 +187,7 @@
                     <div>
                         <div class="video-wrapper relative">
                             <video id="remoteVideo" autoplay playsinline></video>
-                            <div id="noVideoMsg" class="absolute inset-0 flex flex-col items-center justify-center">
+                            <!-- <div id="noVideoMsg" class="absolute inset-0 flex flex-col items-center justify-center">
                                 <svg class="w-16 h-16 text-gray-700 mb-4" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
@@ -196,7 +196,7 @@
                                         d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <p class="text-gray-500">Join a room to watch</p>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="mt-3">
                             <h1 class="text-lg font-medium">Welcome to StreamHub</h1>
@@ -224,15 +224,19 @@
                         <input id="roomId" type="text" placeholder="Enter Room ID"
                             class="w-full h-10 px-3 input-dark rounded-lg text-sm mb-3">
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="startWatching()"
+                            <button id="watchBtn" onclick="startWatching()"
                                 class="btn btn-gray py-2.5 rounded-lg text-sm font-medium">
                                 Watch
                             </button>
-                            <button onclick="startPublishing()"
+                            <button id="streamBtn" onclick="startPublishing()"
                                 class="btn btn-red py-2.5 rounded-lg text-sm font-medium">
                                 Stream
                             </button>
                         </div>
+                        <button id="stopBtn" onclick="stopAll()"
+                            class="btn bg-gray-600 w-full mt-3 py-2.5 rounded-lg text-sm font-medium hidden">
+                            Stop All
+                        </button>
                     </div>
 
                     <!-- Create Room -->
@@ -240,7 +244,7 @@
                         <h3 class="font-medium mb-4">Create Room</h3>
                         <input id="roomName" type="text" placeholder="Stream Title"
                             class="w-full h-10 px-3 input-dark rounded-lg text-sm mb-3">
-                        <button onclick="createRoom()" class="btn btn-red w-full py-2.5 rounded-lg text-sm font-medium">
+                        <button id="createBtn" onclick="createRoom()" class="btn btn-red w-full py-2.5 rounded-lg text-sm font-medium">
                             Create Room
                         </button>
                     </div>
@@ -282,7 +286,7 @@
                     class="px-4 py-2 text-sm hover:bg-white/10 rounded-lg">
                     Cancel
                 </button>
-                <button onclick="createRoomFromModal()" class="btn btn-red px-5 py-2 rounded-lg text-sm font-medium">
+                <button id="modalCreateBtn" onclick="createRoomFromModal()" class="btn btn-red px-5 py-2 rounded-lg text-sm font-medium">
                     Create & Go Live
                 </button>
             </div>

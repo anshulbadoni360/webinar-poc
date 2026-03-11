@@ -5,6 +5,7 @@ let peerConnection;
 let clientId;
 let currentRoomId;
 let negotiating = false;
+let appState = 'idle'; // 'idle', 'streaming', 'watching'
 
 const config = {
     iceServers: [
@@ -19,6 +20,53 @@ const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const roomNameInput = document.getElementById('roomName');
 const roomIdInput = document.getElementById('roomId');
+
+function updateUI() {
+    const watchBtn = document.getElementById('watchBtn');
+    const streamBtn = document.getElementById('streamBtn');
+    const createBtn = document.getElementById('createBtn');
+    const modalCreateBtn = document.getElementById('modalCreateBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const roomIdInput = document.getElementById('roomId');
+    const roomNameInput = document.getElementById('roomName');
+
+    if (appState === 'idle') {
+        watchBtn.disabled = false;
+        streamBtn.disabled = false;
+        createBtn.disabled = false;
+        if (modalCreateBtn) modalCreateBtn.disabled = false;
+        roomIdInput.disabled = false;
+        roomNameInput.disabled = false;
+        stopBtn.classList.add('hidden');
+    } else {
+        watchBtn.disabled = true;
+        streamBtn.disabled = true;
+        createBtn.disabled = true;
+        if (modalCreateBtn) modalCreateBtn.disabled = true;
+        roomIdInput.disabled = true;
+        roomNameInput.disabled = true;
+        stopBtn.classList.remove('hidden');
+    }
+}
+
+async function stopAll() {
+    console.log('Stopping all connections...');
+    if (ws) {
+        ws.close();
+        ws = null;
+    }
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localVideo.srcObject = null;
+    }
+    remoteVideo.srcObject = null;
+    appState = 'idle';
+    updateUI();
+}
 
 // ============ WebSocket Setup ============
 function connectWebSocket() {
@@ -103,7 +151,15 @@ function connectWebSocket() {
                     break;
                 case 'error':
                     alert('Server error: ' + message.error);
+                    stopAll();
                     break;
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket closed');
+            if (appState !== 'idle') {
+                stopAll();
             }
         };
     });
@@ -132,6 +188,8 @@ async function startPublishing() {
     if (!roomId) return alert('Enter a Room ID');
 
     await connectWebSocket();
+    appState = 'streaming';
+    updateUI();
 
     try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -178,6 +236,8 @@ async function startWatching() {
     if (!roomId) return alert('Enter a Room ID');
 
     await connectWebSocket();
+    appState = 'watching';
+    updateUI();
 
     try {
         const response = await fetch(`api/rooms/${roomId}`);
