@@ -297,7 +297,7 @@
         // Fetch rooms for sidebar
         async function fetchRooms() {
             try {
-                const res = await fetch('/api/rooms');
+                const res = await fetch('api/rooms');
                 const rooms = await res.json();
                 const list = document.getElementById('roomList');
 

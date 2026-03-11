@@ -72,6 +72,10 @@ app.post('/api/rooms', (req, res) => {
     res.json({ room });
 });
 
+app.get('/api/rooms', (req, res) => {
+    res.json(Array.from(rooms.values()));
+});
+
 app.get('/api/rooms/:id', (req, res) => {
     const room = rooms.get(parseInt(req.params.id));
     if (!room) return res.status(404).json({ error: 'Room not found' });

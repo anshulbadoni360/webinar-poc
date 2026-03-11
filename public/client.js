@@ -25,7 +25,7 @@ function connectWebSocket() {
     return new Promise((resolve) => {
         // Use relative URL to support local, port forwarding, and devtunnels automatically
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/webinar`;
+        const wsUrl = `${protocol}//${window.location.host}${window.location.pathname}`;
         // const wsUrl = `wss://1dh05vhj-3000.inc1.devtunnels.ms`;
         console.log('Connecting to WebSocket:', wsUrl);
         ws = new WebSocket(wsUrl);
@@ -113,7 +113,7 @@ function connectWebSocket() {
 async function createRoom() {
     const name = roomNameInput.value || 'My Stream';
     try {
-        const response = await fetch('/webinar/api/rooms', {
+        const response = await fetch('api/rooms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name }),
@@ -180,7 +180,7 @@ async function startWatching() {
     await connectWebSocket();
 
     try {
-        const response = await fetch(`/webinar/api/rooms/${roomId}`);
+        const response = await fetch(`api/rooms/${roomId}`);
         const room = await response.json();
 
         if (!room.publishers || room.publishers.length === 0) {
