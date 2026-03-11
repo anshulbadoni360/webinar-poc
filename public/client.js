@@ -113,7 +113,7 @@ function connectWebSocket() {
 async function createRoom() {
     const name = roomNameInput.value || 'My Stream';
     try {
-        const response = await fetch('/api/rooms', {
+        const response = await fetch('/webinar/api/rooms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name }),
@@ -180,7 +180,7 @@ async function startWatching() {
     await connectWebSocket();
 
     try {
-        const response = await fetch(`/api/rooms/${roomId}`);
+        const response = await fetch(`/webinar/api/rooms/${roomId}`);
         const room = await response.json();
 
         if (!room.publishers || room.publishers.length === 0) {
