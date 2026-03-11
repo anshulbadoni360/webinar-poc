@@ -25,7 +25,7 @@ function connectWebSocket() {
     return new Promise((resolve) => {
         // Use relative URL to support local, port forwarding, and devtunnels automatically
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}`;
+        const wsUrl = `${protocol}//${window.location.host}/webinar`;
         // const wsUrl = `wss://1dh05vhj-3000.inc1.devtunnels.ms`;
         console.log('Connecting to WebSocket:', wsUrl);
         ws = new WebSocket(wsUrl);
